@@ -1,0 +1,41 @@
+// Written by Michael Marrero II on 12/03/22, @mcttpx on GitHub
+import numpy as np
+import pandas as pd
+import scipy.stats as stats
+
+def stat_arb(prices1, prices2):
+  # Calculate the mean and standard deviation of the returns for each asset
+  mean1 = np.mean(prices1)
+  std1 = np.std(prices1)
+  mean2 = np.mean(prices2)
+  std2 = np.std(prices2)
+  
+  # Calculate the correlation between the two assets
+  corr = np.corrcoef(prices1, prices2)[0][1]
+  
+  # Calculate the hedge ratio
+  hedge_ratio = (mean1 - mean2) / (std2 - std1 * corr)
+  
+  # Calculate the spread between the two assets
+  spread = prices1 - hedge_ratio * prices2
+  
+  # Calculate the z-score of the spread
+  z_score = (spread - np.mean(spread)) / np.std(spread)
+  
+  # Check if the z-score is above the threshold for statistical arbitrage
+  threshold = 1.96  # 95% confidence interval
+  if z_score > threshold:
+    print("Statistical arbitrage opportunity detected!")
+  else:
+    print("No statistical arbitrage opportunity detected.")
+
+# Load the prices of two assets into Pandas dataframes
+df1 = pd.read_csv("asset1_prices.csv")
+df2 = pd.read_csv("asset2_prices.csv")
+
+# Extract the price series from the dataframes
+prices1 = df1["Price"].values
+prices2 = df2["Price"].values
+
+# Perform statistical arbitrage
+stat_arb(prices1, prices2)
